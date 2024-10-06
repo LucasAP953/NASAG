@@ -9,6 +9,7 @@ public class Code : MonoBehaviour
     float ballRadius;
     float ballDiameter;
     float ballDiameterWithBuffer;
+    int numInThisRow = 1; // Muevo la declaración fuera para que esté disponible globalmente
 
     [SerializeField] GameObject ballPrefab;
     [SerializeField] Transform cueBallPosition;
@@ -42,7 +43,6 @@ public class Code : MonoBehaviour
 
     void PlaceRandomBalls()
     {
-        int numInThisRow = 1;
         int rand;
         Vector3 firstInRowPosition = headBallPosition.position;
         Vector3 currentPosition = firstInRowPosition;
@@ -53,6 +53,9 @@ public class Code : MonoBehaviour
             ball.GetComponent<Ball>().BallSetup(true);
             redBallsRemaining--;
         }
+
+        // Incrementamos numInThisRow después de colocar las bolas en cada fila
+        numInThisRow++;
     }
 
     void PlaceRandomBall()
@@ -75,12 +78,12 @@ public class Code : MonoBehaviour
             blueBallsRemaining--;
         }
 
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 5; i++) // Recorremos las filas
         {
-            for (int j = 0; j < NumThisRow; j++)
+            for (int j = 0; j < numInThisRow; j++) // Usamos numInThisRow aquí
             {
                 if (i == 2 && j == 1)
-                    PlaceBallAt(currentPosition);
+                    PlaceBallAt(currentPosition); // Coloca la bola en la posición actual
                 else if (redBallsRemaining > 0 && blueBallsRemaining > 0)
                 {
                     rand = Random.Range(0, 2);
@@ -93,16 +96,15 @@ public class Code : MonoBehaviour
                 {
                     PlaceBallAt(currentPosition);
                 }
-            }
-            if (redBallsRemaining > 0)
-                PlaceBallAt(currentPosition);
-            else
-                PlaceBlueBall(currentPosition);
-        }
 
-        currentPosition += new Vector3(1, 0, 0).normalized * ballDiameter;
-        firstRowPosition += new Vector3(-1, 0, 0).normalized * ballDiameter;
-        currentPosition += firstRowPosition;
-        NumThisRow++;
+                // Actualizamos la posición de la bola para la siguiente
+                currentPosition += new Vector3(1, 0, 0).normalized * ballDiameter;
+            }
+
+            // Actualizamos la fila para la siguiente iteración
+            firstRowPosition += new Vector3(-1, 0, 0).normalized * ballDiameter;
+            currentPosition = firstRowPosition;
+            numInThisRow++; // Incrementamos el número de bolas en la siguiente fila
+        }
     }
 }
